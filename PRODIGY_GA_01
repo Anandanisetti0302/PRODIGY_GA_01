@@ -1,0 +1,18 @@
+from datasets import load_dataset
+from transformers import GPT2Tokenizer
+import json
+
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+tokenizer.pad_token = tokenizer.eos_token
+
+def read_annotated_data(path):
+    with open(path, 'r') as f:
+        return [json.loads(line)["text"] for line in f if json.loads(line)["answer"] == "accept"]
+
+def write_clean_text(samples, output_path):
+    with open(output_path, 'w') as f:
+        for s in samples:
+            f.write(s.strip() + "\n")
+
+annotated = read_annotated_data("data/annotations.jsonl")
+write_clean_text(annotated, "data/clean_for_training.txt")
